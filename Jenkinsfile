@@ -1,5 +1,5 @@
 node {
-   	properties([[$class: 'JiraProjectProperty'], buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '100')), [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false], parameters([string(defaultValue: '', description: 'Mandatory', name: 'CHANGE_LOG_DESCRIPTION', trim: false)]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
+   	properties([ buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '100')), parameters([string(defaultValue: '', description: 'Mandatory', name: 'CHANGE_LOG_DESCRIPTION', trim: false)]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
    	wrap([$class: 'BuildUser']) {
         USER = "${BUILD_USER}"
         USER_ID = "${BUILD_USER_ID}"
