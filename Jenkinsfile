@@ -96,9 +96,11 @@ pipeline {
             steps{
                 script{
                     sh """
-                        wget -O helm.tar.gz https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
-                        tar zxvf helm.tar.gz
-                        linux-amd64/helm upgrade --install --namespace default lusha ./charts/ 
+                        wget -O app/kubectl https://storage.googleapis.com/kubernetes-release/release/v$KUBECTL/bin/linux/amd64/kubectl app/kubectl
+                        wget -O app/helm.tar.gz https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
+                        tar zxvf app/helm.tar.gz
+                        kubectl config current-context
+                        app/helm upgrade --install --namespace default lusha ./charts/ 
                     """
                 }
             }
