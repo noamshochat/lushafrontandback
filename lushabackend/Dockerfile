@@ -6,7 +6,7 @@ COPY lushabackend/package*.json ./package*.json ./
 
 RUN npm install
 
-COPY  lushabacktend/ .
+COPY  lushabackend/ .
 
 EXPOSE 8080
 
