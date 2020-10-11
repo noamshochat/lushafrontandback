@@ -32,7 +32,7 @@ pipeline {
                 version = "0.0.${BUILD_ID}"
             }
             steps{
-                scrpit{
+                script{
                     myRepo = checkout([$class: 'GitSCM', 
                     branches: [[name: params.COMMIT]], 
                     doGenerateSubmoduleConfigurations: false, 
