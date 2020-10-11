@@ -98,7 +98,7 @@ pipeline {
                     sh """
                         wget -O helm.tar.gz https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
                         tar zxvf helm.tar.gz
-                        inux-amd64/helm upgrade --install --namespace default lusha ./charts/ 
+                        linux-amd64/helm upgrade --install --namespace default lusha ./charts/ 
                     """
                 }
             }
