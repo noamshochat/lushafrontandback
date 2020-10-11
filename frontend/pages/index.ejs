@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Homepage</title>
+</head>
+<body>
+    
+    <h1>Demo page</h1>
+
+    <ul>
+    <% for(const user of users) { %>
+        <li>
+            <h2><%= user.name %></h2>
+        </li>
+    <% } %>
+    </ul>
+
+</body>
+</html>
