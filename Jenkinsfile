@@ -100,6 +100,7 @@ pipeline {
                         wget -O app/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/linux/amd64/kubectl
                         wget -O app/helm.tar.gz https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
                         tar zxvf app/helm.tar.gz
+                        chmod +x app/kubectl
                         app/kubectl config current-context
                         app/helm upgrade --install --namespace default lusha ./charts/ 
                     """
