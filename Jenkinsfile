@@ -96,7 +96,7 @@ pipeline {
             steps{
                 script{
                     sh """
-                        wget -O app/kubectl https://storage.googleapis.com/kubernetes-release/release/v$KUBECTL/bin/linux/amd64/kubectl app/kubectl
+                        wget -O app/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/linux/amd64/kubectl app/kubectl
                         wget -O app/helm.tar.gz https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz
                         tar zxvf app/helm.tar.gz
                         kubectl config current-context
