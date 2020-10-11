@@ -96,6 +96,9 @@ pipeline {
             steps{
                 script{
                     sh """
+                        wget https://get.helm.sh/helm-v$HELM_VERSION-linux-amd64.tar.gz  app/helm.tar.gz
+                        tar zxvf app/helm.tar.gz -C app/
+                        mv app/linux-amd64/helm  app/output/
                         helm upgrade --install --namespace default lusha ./charts/ 
                     """
                 }
