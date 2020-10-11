@@ -57,7 +57,7 @@ pipeline {
                                 usernameVariable: 'DOCKER_USER')]) {
                                     sh """
                                         docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-                                        docker build -t ${dockerRegistry}/${applicationName}:\$version -f lushafrontend/${WORKSPACE}/${applicationName}/Dockerfile .
+                                        docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
                                         docker push ${dockerRegistry}/${applicationName}:\$version
                                     """
                                 }
@@ -77,7 +77,7 @@ pipeline {
                                 usernameVariable: 'DOCKER_USER')]) {
                                     sh """
                                         docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-                                        docker build -t ${dockerRegistry}/${applicationName}:\$version -f lushabacktend/${WORKSPACE}/${applicationName}/Dockerfile .
+                                        docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
                                         docker push ${dockerRegistry}/${applicationName}:\$version
                                     """
                                 }
