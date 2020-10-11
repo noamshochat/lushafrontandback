@@ -39,7 +39,6 @@ pipeline {
                     extensions: [], 
                     submoduleCfg: [], 
                     userRemoteConfigs: [[
-                    credentialsId: githubCredentials, 
                     url: "https://github.com/noamshochat/${githubRepositoryName}.git"]]])
 
                     def gitCommit = myRepo.GIT_COMMIT
