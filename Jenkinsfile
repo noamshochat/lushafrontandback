@@ -56,11 +56,8 @@ pipeline {
                                 passwordVariable: 'DOCKER_PASS', 
                                 usernameVariable: 'DOCKER_USER')]) {
                                     sh """
-                                        cd lushafrontend
-                                        pwd
-                                        ls -l 
                                         docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-                                        docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
+                                        docker build -t ${dockerRegistry}/${applicationName}:\$version -f lushafrontend/${WORKSPACE}/${applicationName}/Dockerfile .
                                         docker push ${dockerRegistry}/${applicationName}:\$version
                                     """
                                 }
@@ -79,11 +76,8 @@ pipeline {
                                 passwordVariable: 'DOCKER_PASS', 
                                 usernameVariable: 'DOCKER_USER')]) {
                                     sh """
-                                        cd lushabacktend
-                                        pwd
-                                        ls -l 
                                         docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-                                        docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
+                                        docker build -t ${dockerRegistry}/${applicationName}:\$version -f lushabacktend/${WORKSPACE}/${applicationName}/Dockerfile .
                                         docker push ${dockerRegistry}/${applicationName}:\$version
                                     """
                                 }

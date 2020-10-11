@@ -1,13 +1,12 @@
 FROM node:10
 
 WORKDIR /usr/src/app
-RUN pwd
-RUN ls -l 
-COPY package*.json ./
+
+COPY lushafronttend/package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY lushafronttend/ .
 
 EXPOSE 80
 
