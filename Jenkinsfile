@@ -67,7 +67,7 @@ pipeline {
                         }
                     }
                 }
-                stage('BUILD_FRONT') {
+                stage('BUILD_BACK') {
                     environment {
                         applicationName = "lushabackend"
                         version = "0.0.${BUILD_ID}"
