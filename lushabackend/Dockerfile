@@ -2,7 +2,7 @@ FROM node:10
 
 WORKDIR /usr/src/app
 
-COPY lushabacktend/package*.json ./package*.json ./
+COPY lushabackend/package*.json ./package*.json ./
 
 RUN npm install
 

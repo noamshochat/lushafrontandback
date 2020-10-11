@@ -2,11 +2,11 @@ FROM node:10
 
 WORKDIR /usr/src/app
 
-COPY lushafronttend/package*.json ./
+COPY lushafrontend/package*.json ./
 
 RUN npm install
 
-COPY lushafronttend/ .
+COPY lushafrontend/ .
 
 EXPOSE 80
 
