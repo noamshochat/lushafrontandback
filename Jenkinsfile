@@ -31,28 +31,32 @@ pipeline {
                 applicationName = "lushafrontend"
                 version = "0.0.${BUILD_ID}"
             }
-            myRepo = checkout([$class: 'GitSCM', 
-            branches: [[name: params.COMMIT]], 
-            doGenerateSubmoduleConfigurations: false, 
-            extensions: [], 
-            submoduleCfg: [], 
-            userRemoteConfigs: [[
-            credentialsId: githubCredentials, 
-            url: "https://github.com/noamshochat/${githubRepositoryName}.git"]]])
+            steps{
+                scrpit{
+                    myRepo = checkout([$class: 'GitSCM', 
+                    branches: [[name: params.COMMIT]], 
+                    doGenerateSubmoduleConfigurations: false, 
+                    extensions: [], 
+                    submoduleCfg: [], 
+                    userRemoteConfigs: [[
+                    credentialsId: githubCredentials, 
+                    url: "https://github.com/noamshochat/${githubRepositoryName}.git"]]])
 
-            def gitCommit = myRepo.GIT_COMMIT
-            def gitBranch = myRepo.GIT_BRANCH
+                    def gitCommit = myRepo.GIT_COMMIT
+                    def gitBranch = myRepo.GIT_BRANCH
 
-            withCredentials([usernamePassword(
-                credentialsId: dockerCredentials, 
-                passwordVariable: 'DOCKER_PASS', 
-                usernameVariable: 'DOCKER_USER')]) {
-                    sh """
-                        docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} ${dockerRegistry}
-                        docker build -t ${dockerRegistry}/:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
-                        docker push ${dockerRegistry}/${applicationName}:\$version
-                    """
-                    }
+                    withCredentials([usernamePassword(
+                        credentialsId: dockerCredentials, 
+                        passwordVariable: 'DOCKER_PASS', 
+                        usernameVariable: 'DOCKER_USER')]) {
+                            sh """
+                                docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} ${dockerRegistry}
+                                docker build -t ${dockerRegistry}/:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
+                                docker push ${dockerRegistry}/${applicationName}:\$version
+                            """
+                            }
+                }
+            }
         }
     }
 }
