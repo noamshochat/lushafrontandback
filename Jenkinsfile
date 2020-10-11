@@ -26,11 +26,7 @@ pipeline {
     }
     agent { label "master" }
     stages{
-        stage('BUILD_FRONT') {
-            environment {
-                applicationName = "lushafrontend"
-                version = "0.0.${BUILD_ID}"
-            }
+        stage('Pull SCM'){
             steps{
                 script{
                     myRepo = checkout([$class: 'GitSCM', 
@@ -43,22 +39,57 @@ pipeline {
 
                     def gitCommit = myRepo.GIT_COMMIT
                     def gitBranch = myRepo.GIT_BRANCH
-
-                    withCredentials([usernamePassword(
-                        credentialsId: dockerCredentials, 
-                        passwordVariable: 'DOCKER_PASS', 
-                        usernameVariable: 'DOCKER_USER')]) {
-                            sh """
-                                cd lushafrontend
-                                pwd
-                                ls -l 
-                                docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-                                docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
-                                docker push ${dockerRegistry}/${applicationName}:\$version
-                            """
-                            }
                 }
             }
+        }
+        parallel{
+            stage('BUILD_FRONT') {
+                environment {
+                    applicationName = "lushafrontend"
+                    version = "0.0.${BUILD_ID}"
+                }
+                steps{
+                    script{
+                        withCredentials([usernamePassword(
+                            credentialsId: dockerCredentials, 
+                            passwordVariable: 'DOCKER_PASS', 
+                            usernameVariable: 'DOCKER_USER')]) {
+                                sh """
+                                    cd lushafrontend
+                                    pwd
+                                    ls -l 
+                                    docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+                                    docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
+                                    docker push ${dockerRegistry}/${applicationName}:\$version
+                                """
+                            }
+                    }
+                }
+            }
+            stage('BUILD_FRONT') {
+                environment {
+                    applicationName = "lushabackend"
+                    version = "0.0.${BUILD_ID}"
+                }
+                steps{
+                    script{
+                        withCredentials([usernamePassword(
+                            credentialsId: dockerCredentials, 
+                            passwordVariable: 'DOCKER_PASS', 
+                            usernameVariable: 'DOCKER_USER')]) {
+                                sh """
+                                    cd lushabacktend
+                                    pwd
+                                    ls -l 
+                                    docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+                                    docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
+                                    docker push ${dockerRegistry}/${applicationName}:\$version
+                                """
+                            }
+                    }
+                }
+            }
+
         }
     }
 }
