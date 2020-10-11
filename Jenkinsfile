@@ -99,6 +99,7 @@ pipeline {
                         helm upgrade --install --namespace default lusha ./charts/ 
                     """
                 }
+            }
         }
     }
 }
