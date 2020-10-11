@@ -91,5 +91,14 @@ pipeline {
 
             }
         }
+        stage('DEPLOY')
+        {
+            steps{
+                script{
+                    sh """
+                        helm upgrade --install --namespace default lusha ./charts/ 
+                    """
+                }
+        }
     }
 }
