@@ -50,7 +50,7 @@ pipeline {
                         usernameVariable: 'DOCKER_USER')]) {
                             sh """
                                 docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-                                docker build -t ${dockerRegistry}/:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
+                                docker build -t ${dockerRegistry}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
                                 docker push ${dockerRegistry}/${applicationName}:\$version
                             """
                             }
