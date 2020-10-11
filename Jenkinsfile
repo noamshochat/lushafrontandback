@@ -49,6 +49,7 @@ pipeline {
                         passwordVariable: 'DOCKER_PASS', 
                         usernameVariable: 'DOCKER_USER')]) {
                             sh """
+                                cd lushafrontend
                                 pwd
                                 ls -l 
                                 docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
