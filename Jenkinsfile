@@ -22,7 +22,7 @@ pipeline {
     environment{
         githubRepositoryName = "lushafrontandback"
         dockerCredentials = "10cb75a2-5369-4a88-99f3-ddd4dc23c3b1"
-        dockerRegistry = "noamshchat@gmail.com"
+        dockerRegistry = "noamsh"
     }
     agent { label "master" }
     stages{
