@@ -49,7 +49,7 @@ pipeline {
 	}
     agent { label "master" }
     stages{
-		stage('PULL_SCM'){
+		stage('BUILD_FRONT'){
 			steps {
 				script{
 					podTemplate(label: jslave , cloud : buildClusterName , containers: [
@@ -80,20 +80,25 @@ pipeline {
 											docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 										"""
 										}
+								sh """
+									version='${version}'
+									ls -l 
+                                    docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
+                                    docker push ${dockerRegistry}/${applicationName}:\$version 
+                                """
 							}
 						}
 					}
 				}
 			}
 		}
-        stage('BUILD_FRONT') {
+       /* stage('BUILD_FRONT') {
 			environment {
 				buildEnvironment = "integration"
 				testContainerName="${UUID.randomUUID().toString()}"
                 applicationName = "lushafrontend"
 			}
 			steps {
-			  retry(1){
 				script{
 					podTemplate(label: jslave , cloud : buildClusterName , containers: [
 					containerTemplate(name: 'slave', image: devSlaveImage, command: 'cat', ttyEnabled: true)
@@ -115,9 +120,8 @@ pipeline {
 							} // node
 						} // podTemplate
 					} // script
-				} // retry
-		  	}
-		}
+		  	}*/
+	}
 		/*stage('INT'){
 			steps {
 				script{ 
@@ -128,5 +132,4 @@ pipeline {
 			}
 		}*/
 
-	}
 }
