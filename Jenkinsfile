@@ -56,8 +56,8 @@ pipeline {
                                 passwordVariable: 'DOCKER_PASS', 
                                 usernameVariable: 'DOCKER_USER')]) {
                                     sh """
-                                        sudo apt-get update
-                                        sudo apt-get install docker-ce docker-ce-cli containerd.io
+                                        apt-get update
+                                        apt-get install docker-ce docker-ce-cli containerd.io
                                         docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
                                         docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
                                         docker push ${dockerRegistry}/${applicationName}:\$version
