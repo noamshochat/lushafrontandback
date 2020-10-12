@@ -8,7 +8,7 @@ node {
         if(USER_ID.contains("@")){
             (USER_ID, value) = USER_ID.split("@")
         }
-        USER_EMAIL = "${BUILD_USER_EMAIL}"
+        //USER_EMAIL = "${BUILD_USER_EMAIL}"
     }
 }
 def myRepo
