@@ -40,23 +40,14 @@ pipeline {
 		emailReceipentList = "noamshochat@gmail.com"
 		githubRepositoryName = "lushafrontandback"
 		devSlaveImage = "devetorodockerregistry.azurecr.io/dotnetcore:2.0.3"
-		itemPathDefault = "${env.applicationName}-${env.COMMIT}.tgz"
+		version = "0.0.${BUILD_ID}"
 		// env.itemPath created dynamically during BUILD stage - takes precedence over env.itemPathDefault for appName+version value
 		// env.appVersion created dynamically during BUILD stage - take precedence over env.COMMIT for version value
 	}
     agent { label "master" }
     stages{
-        stage('BUILD_FRONT') {
-			environment {
-				dockerCredentials = "b947c4d5-08b4-47ff-b87c-b57a538eefe1"
-				dockerRegistry ="noamsh"
-				buildClusterName = "int-aks-we01"
-				buildEnvironment = "integration"
-				testContainerName="${UUID.randomUUID().toString()}"
-                applicationName = "lushafrontend"
-			}
+		stage('PULL_SCM'){
 			steps {
-			  retry(1){
 				script{
 					podTemplate(label: jslave , cloud : buildClusterName , containers: [
 					containerTemplate(name: 'slave', image: devSlaveImage, command: 'cat', ttyEnabled: true)
@@ -86,12 +77,33 @@ pipeline {
 											docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 										"""
 										}
-
-								def version = "0.0.1${BUILD_ID}"
-								// create new env variables
-								env.itemPath = "${env.applicationName}-${version}.tgz" // takes precedence over env.itemPathDefault
-								env.appVersion = version // takes precedence over params.COMMIT
-
+							}
+						}
+					}
+				}
+			}
+		}
+        stage('BUILD_FRONT') {
+			environment {
+				dockerCredentials = "b947c4d5-08b4-47ff-b87c-b57a538eefe1"
+				dockerRegistry ="noamsh"
+				buildClusterName = "int-aks-we01"
+				buildEnvironment = "integration"
+				testContainerName="${UUID.randomUUID().toString()}"
+                applicationName = "lushafrontend"
+			}
+			steps {
+			  retry(1){
+				script{
+					podTemplate(label: jslave , cloud : buildClusterName , containers: [
+					containerTemplate(name: 'slave', image: devSlaveImage, command: 'cat', ttyEnabled: true)
+					],
+					volumes: [
+					hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+					])
+					{
+						node( "${jslave}" ) {
+							container('slave'){
                                 sh """
 									version='${version}'
                                     docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
