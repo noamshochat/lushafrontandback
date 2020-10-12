@@ -94,47 +94,47 @@ pipeline {
 					}
 				}
 			}
-			stage('BUILD_FRONT'){
-				environment {
-                	applicationName = "lushabackend"
-				}
-				steps {
-					script{
-						podTemplate(label: jslave , cloud : buildClusterName , containers: [
-						containerTemplate(name: 'slave', image: devSlaveImage, command: 'cat', ttyEnabled: true)
-						],
-						volumes: [
-						hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
-						])
-						{
-							node( "${jslave}" ) {
-								container('slave'){
-									myRepo = checkout([$class: 'GitSCM', 
-									branches: [[name: params.COMMIT]], 
-									doGenerateSubmoduleConfigurations: false, 
-									extensions: [], 
-									submoduleCfg: [], 
-									userRemoteConfigs: [[							
-									url: "https://github.com/noamshochat/${githubRepositoryName}.git"]]])
+		}
+		stage('BUILD_FRONT'){
+			environment {
+				applicationName = "lushabackend"
+			}
+			steps {
+				script{
+					podTemplate(label: jslave , cloud : buildClusterName , containers: [
+					containerTemplate(name: 'slave', image: devSlaveImage, command: 'cat', ttyEnabled: true)
+					],
+					volumes: [
+					hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+					])
+					{
+						node( "${jslave}" ) {
+							container('slave'){
+								myRepo = checkout([$class: 'GitSCM', 
+								branches: [[name: params.COMMIT]], 
+								doGenerateSubmoduleConfigurations: false, 
+								extensions: [], 
+								submoduleCfg: [], 
+								userRemoteConfigs: [[							
+								url: "https://github.com/noamshochat/${githubRepositoryName}.git"]]])
 
-									def gitCommit = myRepo.GIT_COMMIT
-									def gitBranch = myRepo.GIT_BRANCH
+								def gitCommit = myRepo.GIT_COMMIT
+								def gitBranch = myRepo.GIT_BRANCH
 
-									withCredentials([usernamePassword(
-										credentialsId: dockerCredentials, 
-										passwordVariable: 'DOCKER_PASS', 
-										usernameVariable: 'DOCKER_USER')]) {
-											sh """
-												docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-											"""
-											}
-									sh """
-										version='${version}'
-										ls -l 
-										docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
-										docker push ${dockerRegistry}/${applicationName}:\$version 
-									"""
-								}
+								withCredentials([usernamePassword(
+									credentialsId: dockerCredentials, 
+									passwordVariable: 'DOCKER_PASS', 
+									usernameVariable: 'DOCKER_USER')]) {
+										sh """
+											docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+										"""
+										}
+								sh """
+									version='${version}'
+									ls -l 
+									docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
+									docker push ${dockerRegistry}/${applicationName}:\$version 
+								"""
 							}
 						}
 					}
