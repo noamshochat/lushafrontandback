@@ -4,7 +4,7 @@ const MONGO_USERNAME = getSecret("MONGO_USERNAME");
 const MONGO_PASSWORD = getSecret("MONGO_PASSWORD");
 
 const config = {
-    mongodb_url: `my-release-mongodb.default.svc.cluster.local://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo`,
+    mongodb_url: `mongodb.noam.svc.cluster.local://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo`,
     mongodb_dbname: MONGO_DB_NAME
 }
 
