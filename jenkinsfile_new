@@ -141,6 +141,8 @@ pipeline {
 				}
 			}
 		}
+	}
+}
 		/*stage('INT'){
 			steps {
 				script{ 
@@ -150,5 +152,3 @@ pipeline {
 				}
 			}
 		}*/
-
-}
