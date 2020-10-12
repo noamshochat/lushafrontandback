@@ -41,7 +41,7 @@ pipeline {
                     def gitBranch = myRepo.GIT_BRANCH
 
                     sh """
-                        rm /etc/apt/sources.list.d/*
+                        docker
                         apt-get install apt-transport-https ca-certificates gnupg-agent software-properties-common -y
                         curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
                         apt-key fingerprint 0EBFCD88
