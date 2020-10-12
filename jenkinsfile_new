@@ -47,7 +47,6 @@ pipeline {
     agent { label "master" }
     stages{
         stage('BUILD_FRONT') {
-            when { expression { return fnShouldRunStage([]) } }
 			environment {
 				dockerCredentials = "b947c4d5-08b4-47ff-b87c-b57a538eefe1"
 				dockerRegistry ="noamsh"
