@@ -1,0 +1,119 @@
+@Library('etoro-jenkins-library@v0.0.8') _
+
+node {
+   	properties([[$class: 'JiraProjectProperty'], buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '30', numToKeepStr: '100')), [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false], parameters([string(defaultValue: '', description: 'Mandatory', name: 'CHANGE_LOG_DESCRIPTION', trim: false)]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
+   	wrap([$class: 'BuildUser']) {
+        USER = "${BUILD_USER}"
+        USER_ID = "${BUILD_USER_ID}"
+        println "USER: ${USER}"
+        //Removing user id domain name if exists 
+        if(USER_ID.contains("@")){
+            (USER_ID, value) = USER_ID.split("@")
+        }
+        USER_EMAIL = "${BUILD_USER_EMAIL}"
+    }
+	if(!(params.CHANGE_LOG_DESCRIPTION?.trim())){
+		error "parameter CHANGE_LOG_DESCRIPTION cannot be null, empty or whitespace"
+	}
+}
+
+def myRepo
+pipeline {
+	parameters {
+        string(name:'COMMIT', defaultValue:'main', description:'branch, tag, commitId')
+        extendedChoice(
+            type: 'PT_MULTI_SELECT', // for checkboxes switch to - 'PT_CHECKBOX'
+            name: 'RUN_STAGES',
+            description: 'Stages to run. Stages that are not selected will be skipped. Select multiple values by holding the CTRL key, or the SHIFT key.',
+            defaultValue: 'BUILD',
+			value: 'BUILD,INT',
+            multiSelectDelimiter: ',',
+            visibleItemCount: 10
+        )
+    }
+	options{
+        skipDefaultCheckout true
+    }
+	environment {
+		jslave = "worker-${UUID.randomUUID().toString()}"
+		teamName = "noam"
+		emailReceipentList = "noamshochat@gmail.com"
+		githubRepositoryName = "lushafrontandback"
+		devSlaveImage = "devetorodockerregistry.azurecr.io/dotnetcore:2.0.3"
+		itemPathDefault = "${env.applicationName}-${env.COMMIT}.tgz"
+		// env.itemPath created dynamically during BUILD stage - takes precedence over env.itemPathDefault for appName+version value
+		// env.appVersion created dynamically during BUILD stage - take precedence over env.COMMIT for version value
+	}
+    agent { label "master" }
+    stages{
+        stage('BUILD_FRONT') {
+            when { expression { return fnShouldRunStage([]) } }
+			environment {
+				dockerCredentials = "b947c4d5-08b4-47ff-b87c-b57a538eefe1"
+				dockerRegistry ="noamsh"
+				buildClusterName = "int-aks-we01"
+				buildEnvironment = "integration"
+				testContainerName="${UUID.randomUUID().toString()}"
+                applicationName = "lushafrontend"
+			}
+			steps {
+			  retry(1){
+				script{
+					podTemplate(label: jslave , cloud : buildClusterName , containers: [
+					containerTemplate(name: 'slave', image: devSlaveImage, command: 'cat', ttyEnabled: true)
+					],
+					volumes: [
+					hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+					])
+					{
+						node( "${jslave}" ) {
+							container('slave'){
+								myRepo = checkout([$class: 'GitSCM', 
+								branches: [[name: params.COMMIT]], 
+								doGenerateSubmoduleConfigurations: false, 
+								extensions: [], 
+								submoduleCfg: [], 
+								userRemoteConfigs: [[							
+								url: "https://github.com/noamshochat/${githubRepositoryName}.git"]]])
+
+								def gitCommit = myRepo.GIT_COMMIT
+								def gitBranch = myRepo.GIT_BRANCH
+
+								withCredentials([usernamePassword(
+									credentialsId: dockerCredentials, 
+									passwordVariable: 'DOCKER_PASS', 
+									usernameVariable: 'DOCKER_USER')]) {
+										sh """
+											docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+										"""
+										}
+
+								def version = "0.0.1${BUILD_ID}"
+								// create new env variables
+								env.itemPath = "${env.applicationName}-${version}.tgz" // takes precedence over env.itemPathDefault
+								env.appVersion = version // takes precedence over params.COMMIT
+
+                                sh """
+                                    docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
+                                    docker push ${dockerRegistry}/${applicationName}:\$version 
+                                """
+								
+								} // container
+							} // node
+						} // podTemplate
+					} // script
+				} // retry
+		  	}
+		}
+		/*stage('INT'){
+			steps {
+				script{
+                    sh """
+					    helm upgrade --install --namespace noam lusha ./charts/ 
+                    """
+				}
+			}
+		}*/
+
+	}
+}
