@@ -39,6 +39,15 @@ pipeline {
 
                     def gitCommit = myRepo.GIT_COMMIT
                     def gitBranch = myRepo.GIT_BRANCH
+
+                    sh """
+                        apt-get update
+                        apt-get install apt-transport-https ca-certificates gnupg-agent software-properties-common -y
+                        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+                        apt-key fingerprint 0EBFCD88
+                        add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable"
+                        apt-get install docker-ce docker-ce-cli containerd.io    
+                    """
                 }
             }
         }
@@ -56,12 +65,6 @@ pipeline {
                                 passwordVariable: 'DOCKER_PASS', 
                                 usernameVariable: 'DOCKER_USER')]) {
                                     sh """
-                                        apt-get update
-                                        apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-                                        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-                                        apt-key fingerprint 0EBFCD88
-                                        add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable"
-                                        apt-get install docker-ce docker-ce-cli containerd.io
                                         docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
                                         docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
                                         docker push ${dockerRegistry}/${applicationName}:\$version
