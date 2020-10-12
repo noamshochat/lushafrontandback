@@ -50,6 +50,9 @@ pipeline {
     agent { label "master" }
     stages{
 		stage('BUILD_FRONT'){
+			environment {
+                applicationName = "lushafrontend"
+			}
 			steps {
 				script{
 					podTemplate(label: jslave , cloud : buildClusterName , containers: [
