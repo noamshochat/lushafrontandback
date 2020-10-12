@@ -42,6 +42,8 @@ pipeline {
 		devSlaveImage = "devetorodockerregistry.azurecr.io/dotnetcore:2.0.3"
 		version = "0.0.${BUILD_ID}"
 		buildClusterName = "int-aks-we01"
+		dockerCredentials = "b947c4d5-08b4-47ff-b87c-b57a538eefe1"
+		dockerRegistry ="noamsh"
 		// env.itemPath created dynamically during BUILD stage - takes precedence over env.itemPathDefault for appName+version value
 		// env.appVersion created dynamically during BUILD stage - take precedence over env.COMMIT for version value
 	}
@@ -86,8 +88,6 @@ pipeline {
 		}
         stage('BUILD_FRONT') {
 			environment {
-				dockerCredentials = "b947c4d5-08b4-47ff-b87c-b57a538eefe1"
-				dockerRegistry ="noamsh"
 				buildEnvironment = "integration"
 				testContainerName="${UUID.randomUUID().toString()}"
                 applicationName = "lushafrontend"
