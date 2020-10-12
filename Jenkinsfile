@@ -21,7 +21,7 @@ pipeline {
     }
     environment{
         githubRepositoryName = "lushafrontandback"
-        dockerCredentials = "10cb75a2-5369-4a88-99f3-ddd4dc23c3b1"
+        dockerCredentials = "47673957-460b-426c-b3bd-6a815601c6bf"
         dockerRegistry = "noamsh"
     }
     agent { label "master" }
