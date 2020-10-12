@@ -93,6 +93,7 @@ pipeline {
 								env.appVersion = version // takes precedence over params.COMMIT
 
                                 sh """
+									version='${version}'
                                     docker build -t ${dockerRegistry}/${applicationName}:\$version -f ${WORKSPACE}/${applicationName}/Dockerfile .
                                     docker push ${dockerRegistry}/${applicationName}:\$version 
                                 """
